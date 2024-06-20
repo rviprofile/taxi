@@ -1,7 +1,11 @@
-import axios from 'axios'
+import API from '../../core/axios'
 
-export const getMenu = async () => {
-	const { data } = await axios.get('https://test.taxivoshod.ru/api/crm/?w=menu')
+class MenuService {
+    getMenu() {
+        let url = 'https://test.taxivoshod.ru/api/crm/?w=menu'
 
-	return data
+        return API.get(url)
+    }
 }
+
+export default new MenuService();

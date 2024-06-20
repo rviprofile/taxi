@@ -13,7 +13,7 @@ export const DatePaginationFilter = ({ date, onDateChange }: DatePaginationFilte
 		<S.DatePaginationFilter>
 			<DatePicker selected={date} onChange={onDateChange} />
 
-			<Pagination page={1} pageCount={10} onPrev={() => {}} onNext={() => {}} onLast={() => {}} />
+			<Pagination page={1} pageCount={10} onPrev={() => {}} onNext={() => {console.log('object')}} onLast={() => {}} />
 		</S.DatePaginationFilter>
 	)
 }

@@ -13,7 +13,7 @@ import { TableBody, TableCell, TableContainer, TableHead } from 'ui/Table/Table.
 export { Badge }
 
 export const AvailableCars = styled(Box)`
-	width: 403px;
+	width: 500px;
 	padding: 0;
 
 	${HeadingContainer} {

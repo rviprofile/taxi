@@ -14,8 +14,8 @@ import CompanyIcon from 'public/icons/sidebar/company.svg'
 import StockIcon from 'public/icons/sidebar/stock.svg'
 import ServiceStationIcon from 'public/icons/sidebar/service-station.svg'
 import MessageIcon from 'public/icons/sidebar/message.svg'
-import { menuAPI } from 'api'
 import { useQuery } from '@tanstack/react-query'
+import MenuService from '../../../api/menu/menu'
 
 interface SidebarProps {
 	isOpen: boolean
@@ -23,11 +23,11 @@ interface SidebarProps {
 }
 
 export const Sidebar = ({ isOpen, onSidebarToggle }: SidebarProps) => {
-	let { data } = useQuery({
+	const { data } = useQuery({
 		queryKey: ['menu'],
-		queryFn: () => menuAPI
+		queryFn: async () => await MenuService.getMenu()
 	})
-	console.log(data);
+	console.log(data)
 	const router = useRouter()
 	const messagesNumber = 12
 

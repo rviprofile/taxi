@@ -33,7 +33,7 @@ export const Table = <TData extends RowData>({
 	const table = useReactTable<TData>(options)
 
 	const currentPage = table.getState().pagination.pageIndex
-	const isDataEmpty = options.data.length === 0
+	const isDataEmpty = options.data?.length === 0
 
 	useEffect(() => {
 		table.setPageIndex(0)
