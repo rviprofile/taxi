@@ -10,6 +10,11 @@ interface MenuListItemProps {
 	color: string
 }
 
+interface MenuItemImgProps {
+	src: string
+	color: string
+}
+
 interface MenuLogoProps {
 	isOpen: boolean
 }
@@ -42,13 +47,10 @@ export const MenuItemLabel = styled.span`
 
 export const MenuItemLabelHeader = styled(MenuItemLabel)``
 
-export const MenuItemImg = styled.img`
-	color: green;
-	fill: green;
-`
+export const MenuItemImg = styled.img<MenuItemImgProps>``
 
 export const HideGroupButton = styled(MenuItemLabel)`
-	color: transparent;
+	color: #818993;
 `
 
 export const MenuListItem = styled.li<MenuListItemProps>`

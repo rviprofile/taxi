@@ -48,12 +48,12 @@ export const Sidebar = ({ isOpen, onSidebarToggle }: SidebarProps) => {
 			<S.MenuList>
 				{list
 					? list.map(({ code, icon, url, name, type, submenu, style }, idx) => {
-							const isChatItem = name === 'Чат'
 							const isSelected = router.pathname.startsWith(url)
 
 							return (
 								<Fragment key={url}>
 									{idx === 0 ? (
+										// Шапка меню
 										<S.MenuListItem
 											selected={false}
 											onClick={onSidebarToggle}
@@ -74,21 +74,26 @@ export const Sidebar = ({ isOpen, onSidebarToggle }: SidebarProps) => {
 										</S.MenuListItem>
 									) : null}
 									{type === 'lvl1-group' ? (
-										<S.MenuListItemsGroup
-											color={style ? style : 'gray'}
-											onMouseEnter={() => setOpenGroup(code)}
-										>
-											<S.MenuListItem selected={false} color={style ? style : '#818993'}>
+										// Объект с подменю
+										<S.MenuListItemsGroup color={style ? style : 'gray'}>
+											{/* Название группы */}
+											<S.MenuListItem
+												selected={false}
+												color={style ? style : '#818993'}
+												onClick={() => setOpenGroup(code)}
+											>
 												<Link href={url}>
 													<S.MenuItemIcon>
-														<S.MenuItemImg src={`/icons/sidebar/${code}.svg`} alt="icon" />
-														{isChatItem ? (
-															<S.MessagesNumber>{messagesNumber}</S.MessagesNumber>
-														) : null}
+														<S.MenuItemImg
+															src={`/icons/sidebar/${code}.svg`}
+															color={style ? style : '#818993'}
+															alt="icon"
+														/>
 													</S.MenuItemIcon>
 													<S.MenuItemLabelHeader>{name}</S.MenuItemLabelHeader>
 												</Link>
 											</S.MenuListItem>
+											{/* Список из submenu */}
 											{openGroup === code
 												? submenu?.map(({ code, icon, url, name, type }) => {
 														return (
@@ -101,13 +106,9 @@ export const Sidebar = ({ isOpen, onSidebarToggle }: SidebarProps) => {
 																	<S.MenuItemIcon>
 																		<S.MenuItemImg
 																			src={`/icons/sidebar/${code}.svg`}
+																			color={style ? style : '#818993'}
 																			alt={`icon ${code}`}
 																		/>
-																		{isChatItem ? (
-																			<S.MessagesNumber>
-																				{messagesNumber}
-																			</S.MessagesNumber>
-																		) : null}
 																	</S.MenuItemIcon>
 																	<S.MenuItemLabel>{name}</S.MenuItemLabel>
 																</Link>
@@ -115,9 +116,14 @@ export const Sidebar = ({ isOpen, onSidebarToggle }: SidebarProps) => {
 														)
 												  })
 												: ''}
+											{/* Кнопка закрытия подменю */}
 											{openGroup === code ? (
 												<S.HideButtonBlock onClick={() => setOpenGroup('')}>
-													<S.MenuItemImg src={'/icons/sidebar/arrowTop.svg'} alt="icon" />
+													<S.MenuItemImg
+														src={'/icons/sidebar/arrowTop.svg'}
+														color={style ? style : '#818993'}
+														alt="icon"
+													/>
 													<S.HideGroupButton>скрыть</S.HideGroupButton>
 												</S.HideButtonBlock>
 											) : (
@@ -125,6 +131,7 @@ export const Sidebar = ({ isOpen, onSidebarToggle }: SidebarProps) => {
 											)}
 										</S.MenuListItemsGroup>
 									) : (
+										// Обычный пункт меню
 										<S.MenuListItem
 											selected={false}
 											onClick={onSidebarToggle}
@@ -132,10 +139,11 @@ export const Sidebar = ({ isOpen, onSidebarToggle }: SidebarProps) => {
 										>
 											<Link href={url}>
 												<S.MenuItemIcon>
-													<S.MenuItemImg src={`/icons/sidebar/${code}.svg`} alt={`icon ${code}`} />
-													{isChatItem ? (
-														<S.MessagesNumber>{messagesNumber}</S.MessagesNumber>
-													) : null}
+													<S.MenuItemImg
+														src={`/icons/sidebar/${code}.svg`}
+														color={style ? style : '#818993'}
+														alt={`icon ${code}`}
+													/>
 												</S.MenuItemIcon>
 												<S.MenuItemLabel>{name}</S.MenuItemLabel>
 											</Link>
@@ -145,11 +153,16 @@ export const Sidebar = ({ isOpen, onSidebarToggle }: SidebarProps) => {
 							)
 					  })
 					: ''}
+				{/* Блок с чатом и закладками */}
 				<S.ChatAndBookmarkBlock>
 					<S.MenuListItem selected={false} onClick={onSidebarToggle} color="white">
 						<Link href="/chat">
 							<S.MenuItemIcon>
-								<S.MenuItemImg src={'/icons/sidebar/message.svg'} alt="icon" />
+								<S.MenuItemImg
+									src={'/icons/sidebar/message.svg'}
+									color={'#fff'}
+									alt="icon"
+								/>
 								<S.MessagesNumber>{messagesNumber}</S.MessagesNumber>
 							</S.MenuItemIcon>
 							<S.MenuItemLabel>Чат</S.MenuItemLabel>
@@ -158,7 +171,7 @@ export const Sidebar = ({ isOpen, onSidebarToggle }: SidebarProps) => {
 					<S.MenuListItem selected={false} onClick={onSidebarToggle} color="white">
 						<Link href="/bookmarks">
 							<S.MenuItemIcon>
-								<S.MenuItemImg src={'/icons/sidebar/bookmark.svg'} alt="icon" />
+								<S.MenuItemImg src={'/icons/sidebar/bookmark.svg'} color={'#fff'}  alt="icon" />
 								<S.MessagesNumber>{bookmarksNumber}</S.MessagesNumber>
 							</S.MenuItemIcon>
 							<S.MenuItemLabel>Закладки</S.MenuItemLabel>
