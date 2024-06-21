@@ -15,10 +15,15 @@ export const MenuItemIcon = styled.span`
 	border-radius: 20px;
 `
 
+export const MenuItemIconGroup = styled.span`
+	position: relative;
+	padding: 5px 20px;
+	border-radius: 20px;
+`
+
 export const MenuListItem = styled.li<MenuListItemProps>`
 	padding: 2px 10px;
 	transition: 0.3s;
-
 	&:not(:last-child) {
 		margin-bottom: 11px;
 	}
@@ -50,6 +55,11 @@ export const MenuListItem = styled.li<MenuListItemProps>`
 			}
 		`}
 `
+export const MenuListItemGroup = styled.li`
+	cursor: pointer;
+	height: auto;
+	margin-top: 10px;
+`
 
 export const MenuItemLabel = styled.span`
 	margin-left: 5px;
@@ -64,7 +74,6 @@ export const MenuList = styled.ul`
 	display: flex;
 	flex-direction: column;
 	width: 100%;
-
 	& > ${MenuListItem}:first-of-type {
 		padding-top: 10px;
 		${MenuItemLabel} {
@@ -94,13 +103,18 @@ export const Sidebar = styled.aside<SidebarProps>`
 	flex-shrink: 0;
 	padding-bottom: 25px;
 	width: 62px;
+	height: 100%;
 	min-height: 100vh;
 	background: #000;
-	overflow: hidden;
+	overflow: scroll;
 	transition: 0.3s ease-out;
 	box-sizing: border-box;
 	z-index: 100;
-
+	-ms-overflow-style: none;
+	-moz-scrollbars-none;
+	&::-webkit-scrollbar {
+		width: 0;
+	}
 	&:hover {
 		width: 229px;
 		background: rgba(31, 34, 37, 0.8);

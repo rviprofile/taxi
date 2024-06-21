@@ -1,4 +1,4 @@
-import { Fragment } from 'react'
+import { Fragment, useEffect, useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 
@@ -22,14 +22,31 @@ interface SidebarProps {
 	onSidebarToggle: () => void
 }
 
+interface MenuItem {
+	code: string
+	icon: string
+	name: string
+	style?: string
+	submenu?: MenuItem[]
+	type: string
+	url: string
+}
+
 export const Sidebar = ({ isOpen, onSidebarToggle }: SidebarProps) => {
 	const { data } = useQuery({
 		queryKey: ['menu'],
 		queryFn: async () => await MenuService.getMenu()
 	})
-	console.log(data)
 	const router = useRouter()
 	const messagesNumber = 12
+
+	const [menuItemsList, setMenuItemList] = useState<MenuItem[]>([])
+	useEffect(() => {
+		if (data) {
+			setMenuItemList(data!.data)
+			console.log(menuItemsList)
+		}
+	}, [data])
 
 	const links = [
 		{ icon: <WalletIcon />, label: 'Финансы', href: ROUTE_NAMES.FINANCE },
@@ -52,12 +69,12 @@ export const Sidebar = ({ isOpen, onSidebarToggle }: SidebarProps) => {
 	return (
 		<S.Sidebar open={isOpen}>
 			<S.MenuList>
-				{links.map(({ icon, label, href }, idx) => {
-					const isChatItem = label === 'Чат'
-					const isSelected = router.pathname.startsWith(href)
+				{menuItemsList.map(({ code, icon, url, name, type, submenu }, idx) => {
+					const isChatItem = name === 'Чат'
+					const isSelected = router.pathname.startsWith(url)
 
 					return (
-						<Fragment key={href}>
+						<Fragment key={url}>
 							{idx === 0 ? (
 								<S.MenuListItem selected={false} onClick={onSidebarToggle}>
 									<S.ButtonExpand>
@@ -65,23 +82,51 @@ export const Sidebar = ({ isOpen, onSidebarToggle }: SidebarProps) => {
 											<HamburgerIcon />
 										</S.MenuItemIcon>
 										<S.MenuItemLabel>
-											{!isOpen ? 'Развернуть меню' : 'Свернуть меню'}
+											<img src={'/icons/sidebar/logo.svg'} alt="logo" />
 										</S.MenuItemLabel>
 									</S.ButtonExpand>
 								</S.MenuListItem>
 							) : null}
-
-							<S.MenuListItem key={href} selected={isSelected}>
-								<Link href={href}>
-									<S.MenuItemIcon>
-										{icon}
-										{isChatItem ? (
-											<S.MessagesNumber>{messagesNumber}</S.MessagesNumber>
-										) : null}
-									</S.MenuItemIcon>
-									<S.MenuItemLabel>{label}</S.MenuItemLabel>
-								</Link>
-							</S.MenuListItem>
+							{type === 'lvl1-group' ? (
+								// <S.MenuListItem key={url} selected={isSelected}>
+									<S.MenuListItemGroup>
+										<S.MenuItemIconGroup>
+											<img src={'/icons/sidebar/wallet.svg'} alt="icon" />
+											{isChatItem ? (
+												<S.MessagesNumber>{messagesNumber}</S.MessagesNumber>
+											) : null}
+										</S.MenuItemIconGroup>
+										<S.MenuItemLabel>{name}</S.MenuItemLabel>
+										<S.MenuList>
+											{submenu?.map(({ code, icon, url, name, type }) => {
+												return (
+													<S.MenuListItem key={url + name} selected={isSelected}>
+														<S.MenuItemIcon>
+															<img src={'/icons/sidebar/wallet.svg'} alt="icon" />
+															{isChatItem ? (
+																<S.MessagesNumber>{messagesNumber}</S.MessagesNumber>
+															) : null}
+														</S.MenuItemIcon>
+														<S.MenuItemLabel>{name}</S.MenuItemLabel>
+													</S.MenuListItem>
+												)
+											})}
+										</S.MenuList>
+									</S.MenuListItemGroup>
+								// </S.MenuListItem>
+							) : (
+								<S.MenuListItem selected={false} onClick={onSidebarToggle}>
+									<Link href={url}>
+										<S.MenuItemIcon>
+											<img src={'/icons/sidebar/wallet.svg'} alt="icon" />
+											{isChatItem ? (
+												<S.MessagesNumber>{messagesNumber}</S.MessagesNumber>
+											) : null}
+										</S.MenuItemIcon>
+										<S.MenuItemLabel>{name}</S.MenuItemLabel>
+									</Link>
+								</S.MenuListItem>
+							)}
 						</Fragment>
 					)
 				})}
