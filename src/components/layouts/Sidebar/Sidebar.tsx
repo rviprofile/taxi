@@ -2,20 +2,12 @@ import { Fragment, useEffect, useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 
-import { ROUTE_NAMES } from 'constants/routes'
-
 import * as S from './Sidebar.styled'
 
 import HamburgerIcon from 'public/icons/hamburger.svg'
-import WalletIcon from 'public/icons/sidebar/wallet.svg'
-import GroupIcon from 'public/icons/sidebar/group.svg'
-import CarIcon from 'public/icons/sidebar/car.svg'
-import CompanyIcon from 'public/icons/sidebar/company.svg'
-import StockIcon from 'public/icons/sidebar/stock.svg'
-import ServiceStationIcon from 'public/icons/sidebar/service-station.svg'
-import MessageIcon from 'public/icons/sidebar/message.svg'
 import { useQuery } from '@tanstack/react-query'
 import MenuService from '../../../api/menu/menu'
+import Image from 'next/image'
 
 interface SidebarProps {
 	isOpen: boolean
@@ -39,97 +31,140 @@ export const Sidebar = ({ isOpen, onSidebarToggle }: SidebarProps) => {
 	})
 	const router = useRouter()
 	const messagesNumber = 12
+	const bookmarksNumber = 5
 
-	const [menuItemsList, setMenuItemList] = useState<MenuItem[]>([])
+	const [list, setList] = useState<MenuItem[]>([])
+	const [openGroup, setOpenGroup] = useState<string>()
+
 	useEffect(() => {
 		if (data) {
-			setMenuItemList(data!.data)
-			console.log(menuItemsList)
+			setList(data!.data)
+			console.log(data!.data)
 		}
 	}, [data])
-
-	const links = [
-		{ icon: <WalletIcon />, label: 'Финансы', href: ROUTE_NAMES.FINANCE },
-		{
-			icon: <GroupIcon />,
-			label: 'Контрагенты',
-			href: ROUTE_NAMES.COUNTERPARTIES
-		},
-		{ icon: <CarIcon />, label: 'Автомобили', href: ROUTE_NAMES.CARS },
-		{ icon: <CompanyIcon />, label: 'Компания', href: ROUTE_NAMES.COMPANY },
-		{ icon: <StockIcon />, label: 'Склад', href: ROUTE_NAMES.STOCK },
-		{
-			icon: <ServiceStationIcon />,
-			label: 'СТО',
-			href: ROUTE_NAMES.SERVICE_STATION
-		},
-		{ icon: <MessageIcon />, label: 'Чат', href: ROUTE_NAMES.CHAT }
-	]
 
 	return (
 		<S.Sidebar open={isOpen}>
 			<S.MenuList>
-				{menuItemsList.map(({ code, icon, url, name, type, submenu }, idx) => {
-					const isChatItem = name === 'Чат'
-					const isSelected = router.pathname.startsWith(url)
+				{list
+					? list.map(({ code, icon, url, name, type, submenu, style }, idx) => {
+							const isChatItem = name === 'Чат'
+							const isSelected = router.pathname.startsWith(url)
 
-					return (
-						<Fragment key={url}>
-							{idx === 0 ? (
-								<S.MenuListItem selected={false} onClick={onSidebarToggle}>
-									<S.ButtonExpand>
-										<S.MenuItemIcon>
-											<HamburgerIcon />
-										</S.MenuItemIcon>
-										<S.MenuItemLabel>
-											<img src={'/icons/sidebar/logo.svg'} alt="logo" />
-										</S.MenuItemLabel>
-									</S.ButtonExpand>
-								</S.MenuListItem>
-							) : null}
-							{type === 'lvl1-group' ? (
-								// <S.MenuListItem key={url} selected={isSelected}>
-									<S.MenuListItemGroup>
-										<S.MenuItemIconGroup>
-											<img src={'/icons/sidebar/wallet.svg'} alt="icon" />
-											{isChatItem ? (
-												<S.MessagesNumber>{messagesNumber}</S.MessagesNumber>
-											) : null}
-										</S.MenuItemIconGroup>
-										<S.MenuItemLabel>{name}</S.MenuItemLabel>
-										<S.MenuList>
-											{submenu?.map(({ code, icon, url, name, type }) => {
-												return (
-													<S.MenuListItem key={url + name} selected={isSelected}>
-														<S.MenuItemIcon>
-															<img src={'/icons/sidebar/wallet.svg'} alt="icon" />
-															{isChatItem ? (
-																<S.MessagesNumber>{messagesNumber}</S.MessagesNumber>
-															) : null}
-														</S.MenuItemIcon>
-														<S.MenuItemLabel>{name}</S.MenuItemLabel>
-													</S.MenuListItem>
-												)
-											})}
-										</S.MenuList>
-									</S.MenuListItemGroup>
-								// </S.MenuListItem>
-							) : (
-								<S.MenuListItem selected={false} onClick={onSidebarToggle}>
-									<Link href={url}>
-										<S.MenuItemIcon>
-											<img src={'/icons/sidebar/wallet.svg'} alt="icon" />
-											{isChatItem ? (
-												<S.MessagesNumber>{messagesNumber}</S.MessagesNumber>
-											) : null}
-										</S.MenuItemIcon>
-										<S.MenuItemLabel>{name}</S.MenuItemLabel>
-									</Link>
-								</S.MenuListItem>
-							)}
-						</Fragment>
-					)
-				})}
+							return (
+								<Fragment key={url}>
+									{idx === 0 ? (
+										<S.MenuListItem
+											selected={false}
+											onClick={onSidebarToggle}
+											color={style ? style : 'white'}
+										>
+											<S.ButtonExpand>
+												<S.MenuItemIcon>
+													<HamburgerIcon />
+												</S.MenuItemIcon>
+												<S.MenuItemLabel>
+													<S.MenuLogo
+														src={'/icons/sidebar/logo.svg'}
+														alt="logo"
+														isOpen={isOpen}
+													/>
+												</S.MenuItemLabel>
+											</S.ButtonExpand>
+										</S.MenuListItem>
+									) : null}
+									{type === 'lvl1-group' ? (
+										<S.MenuListItemsGroup
+											color={style ? style : 'gray'}
+											onMouseEnter={() => setOpenGroup(code)}
+										>
+											<S.MenuListItem selected={false} color={style ? style : '#818993'}>
+												<Link href={url}>
+													<S.MenuItemIcon>
+														<S.MenuItemImg src={`/icons/sidebar/${code}.svg`} alt="icon" />
+														{isChatItem ? (
+															<S.MessagesNumber>{messagesNumber}</S.MessagesNumber>
+														) : null}
+													</S.MenuItemIcon>
+													<S.MenuItemLabelHeader>{name}</S.MenuItemLabelHeader>
+												</Link>
+											</S.MenuListItem>
+											{openGroup === code
+												? submenu?.map(({ code, icon, url, name, type }) => {
+														return (
+															<S.MenuListItemInGroup
+																key={url + code}
+																selected={false}
+																color={style ? style : '#818993'}
+															>
+																<Link href={url}>
+																	<S.MenuItemIcon>
+																		<S.MenuItemImg
+																			src={`/icons/sidebar/${code}.svg`}
+																			alt={`icon ${code}`}
+																		/>
+																		{isChatItem ? (
+																			<S.MessagesNumber>
+																				{messagesNumber}
+																			</S.MessagesNumber>
+																		) : null}
+																	</S.MenuItemIcon>
+																	<S.MenuItemLabel>{name}</S.MenuItemLabel>
+																</Link>
+															</S.MenuListItemInGroup>
+														)
+												  })
+												: ''}
+											{openGroup === code ? (
+												<S.HideButtonBlock onClick={() => setOpenGroup('')}>
+													<S.MenuItemImg src={'/icons/sidebar/arrowTop.svg'} alt="icon" />
+													<S.HideGroupButton>скрыть</S.HideGroupButton>
+												</S.HideButtonBlock>
+											) : (
+												''
+											)}
+										</S.MenuListItemsGroup>
+									) : (
+										<S.MenuListItem
+											selected={false}
+											onClick={onSidebarToggle}
+											color={style ? style : 'white'}
+										>
+											<Link href={url}>
+												<S.MenuItemIcon>
+													<S.MenuItemImg src={`/icons/sidebar/${code}.svg`} alt={`icon ${code}`} />
+													{isChatItem ? (
+														<S.MessagesNumber>{messagesNumber}</S.MessagesNumber>
+													) : null}
+												</S.MenuItemIcon>
+												<S.MenuItemLabel>{name}</S.MenuItemLabel>
+											</Link>
+										</S.MenuListItem>
+									)}
+								</Fragment>
+							)
+					  })
+					: ''}
+				<S.ChatAndBookmarkBlock>
+					<S.MenuListItem selected={false} onClick={onSidebarToggle} color="white">
+						<Link href="/chat">
+							<S.MenuItemIcon>
+								<S.MenuItemImg src={'/icons/sidebar/message.svg'} alt="icon" />
+								<S.MessagesNumber>{messagesNumber}</S.MessagesNumber>
+							</S.MenuItemIcon>
+							<S.MenuItemLabel>Чат</S.MenuItemLabel>
+						</Link>
+					</S.MenuListItem>
+					<S.MenuListItem selected={false} onClick={onSidebarToggle} color="white">
+						<Link href="/bookmarks">
+							<S.MenuItemIcon>
+								<S.MenuItemImg src={'/icons/sidebar/bookmark.svg'} alt="icon" />
+								<S.MessagesNumber>{bookmarksNumber}</S.MessagesNumber>
+							</S.MenuItemIcon>
+							<S.MenuItemLabel>Закладки</S.MenuItemLabel>
+						</Link>
+					</S.MenuListItem>
+				</S.ChatAndBookmarkBlock>
 			</S.MenuList>
 		</S.Sidebar>
 	)

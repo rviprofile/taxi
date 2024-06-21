@@ -7,6 +7,15 @@ interface SidebarProps {
 
 interface MenuListItemProps {
 	selected: boolean
+	color: string
+}
+
+interface MenuLogoProps {
+	isOpen: boolean
+}
+
+interface MenuListItemGroupProps {
+	color: string
 }
 
 export const MenuItemIcon = styled.span`
@@ -19,6 +28,27 @@ export const MenuItemIconGroup = styled.span`
 	position: relative;
 	padding: 5px 20px;
 	border-radius: 20px;
+`
+
+export const MenuItemLabel = styled.span`
+	margin-left: 5px;
+	font-size: 14px;
+	font-weight: 500;
+	white-space: nowrap;
+	color: transparent;
+	transition: 0.3s;
+	color: transparent;
+`
+
+export const MenuItemLabelHeader = styled(MenuItemLabel)``
+
+export const MenuItemImg = styled.img`
+	color: green;
+	fill: green;
+`
+
+export const HideGroupButton = styled(MenuItemLabel)`
+	color: transparent;
 `
 
 export const MenuListItem = styled.li<MenuListItemProps>`
@@ -40,6 +70,12 @@ export const MenuListItem = styled.li<MenuListItemProps>`
 	&& {
 		&:hover {
 			background: rgba(55, 63, 72, 0.5);
+			${MenuItemLabel} {
+				color: ${({ color }) => color};
+			}
+			${MenuItemIcon} {
+				fill: green;
+			}
 		}
 
 		&:active {
@@ -55,19 +91,24 @@ export const MenuListItem = styled.li<MenuListItemProps>`
 			}
 		`}
 `
-export const MenuListItemGroup = styled.li`
+
+export const MenuListItemInGroup = styled(MenuListItem)``
+
+export const MenuListItemsGroup = styled.div<MenuListItemGroupProps>`
 	cursor: pointer;
 	height: auto;
-	margin-top: 10px;
+	margin-top: 5px;
+	margin-bottom: 5px;
+	border-left: 2px solid ${({ color }) => color};
+	background-color: rgb(255 255 255 / 5%);
 `
 
-export const MenuItemLabel = styled.span`
-	margin-left: 5px;
-	font-size: 14px;
-	font-weight: 500;
-	white-space: nowrap;
-	color: transparent;
-	transition: 0.3s;
+export const MenuLogo = styled.img<MenuLogoProps>`
+	display: ${({ isOpen }) => (isOpen ? 'block' : 'none')};
+`
+
+export const MenuLogoActive = styled.img`
+	display: block;
 `
 
 export const MenuList = styled.ul`
@@ -81,6 +122,7 @@ export const MenuList = styled.ul`
 			font-weight: 900;
 			font-size: 16px;
 			line-height: 19px;
+			color: #fff;
 		}
 	}
 `
@@ -91,8 +133,17 @@ const openedSidebarStyles = css`
 	backdrop-filter: blur(10px);
 
 	${MenuItemLabel} {
+		color: #818993;
+	}
+	${MenuItemLabelHeader} {
 		color: #fff;
 	}
+`
+
+export const HideButtonBlock = styled(MenuItemIconGroup)`
+	display: flex;
+	gap: 20px;
+	padding-bottom: 10px;
 `
 
 export const Sidebar = styled.aside<SidebarProps>`
@@ -121,7 +172,17 @@ export const Sidebar = styled.aside<SidebarProps>`
 		backdrop-filter: blur(10px);
 
 		${MenuItemLabel} {
-			color: #fff;
+			color: #818993;
+		}
+		${MenuItemLabelHeader} {
+		color: #fff;
+		}
+		${HideGroupButton} {
+					color: #fff;
+		}
+
+		${MenuLogo} {
+		display: block;
 		}
 	}
 
@@ -157,4 +218,13 @@ export const MessagesNumber = styled.span`
 	line-height: 14px;
 	color: #000;
 	transform: translateX(-50%);
+`
+export const ChatAndBookmarkBlock = styled.div`
+	background: #0f1113;
+	position: sticky;
+	transform: translateY(25px);
+	bottom: 0;
+	-webkit-box-shadow: 0px -28px 40px 10px rgba(0, 0, 0, 0.57);
+	-moz-box-shadow: 0px -28px 40px 10px rgba(0, 0, 0, 0.57);
+	box-shadow: 0px -28px 40px 10px rgba(0, 0, 0, 0.57);
 `
