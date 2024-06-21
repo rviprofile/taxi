@@ -12,7 +12,7 @@ interface MenuListItemProps {
 
 interface MenuItemImgProps {
 	src: string
-	color: string
+	color?: string
 }
 
 interface MenuLogoProps {
@@ -192,11 +192,14 @@ export const Sidebar = styled.aside<SidebarProps>`
 `
 
 export const ButtonExpand = styled.button`
+	padding-bottom: 10px;
 	display: flex;
 	align-items: center;
 	width: 100%;
 	border-radius: 5px;
 	transition: 0.3s;
+	position: sticky;
+	top: 0;
 
 	& > span {
 		display: flex;

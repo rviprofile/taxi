@@ -39,7 +39,6 @@ export const Sidebar = ({ isOpen, onSidebarToggle }: SidebarProps) => {
 	useEffect(() => {
 		if (data) {
 			setList(data!.data)
-			console.log(data!.data)
 		}
 	}, [data])
 
@@ -87,7 +86,7 @@ export const Sidebar = ({ isOpen, onSidebarToggle }: SidebarProps) => {
 														<S.MenuItemImg
 															src={`/icons/sidebar/${code}.svg`}
 															color={style ? style : '#818993'}
-															alt="icon"
+															alt="code"
 														/>
 													</S.MenuItemIcon>
 													<S.MenuItemLabelHeader>{name}</S.MenuItemLabelHeader>
@@ -171,7 +170,11 @@ export const Sidebar = ({ isOpen, onSidebarToggle }: SidebarProps) => {
 					<S.MenuListItem selected={false} onClick={onSidebarToggle} color="white">
 						<Link href="/bookmarks">
 							<S.MenuItemIcon>
-								<S.MenuItemImg src={'/icons/sidebar/bookmark.svg'} color={'#fff'}  alt="icon" />
+								<S.MenuItemImg
+									src={'/icons/sidebar/bookmark.svg'}
+									color={'#fff'}
+									alt="icon"
+								/>
 								<S.MessagesNumber>{bookmarksNumber}</S.MessagesNumber>
 							</S.MenuItemIcon>
 							<S.MenuItemLabel>Закладки</S.MenuItemLabel>

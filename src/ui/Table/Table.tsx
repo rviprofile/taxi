@@ -31,7 +31,6 @@ export const Table = <TData extends RowData>({
 	onRowClick
 }: TableProps<TData>) => {
 	const table = useReactTable<TData>(options)
-	console.log(options);
 	const currentPage = table.getState().pagination.pageIndex
 	const isDataEmpty = options.data?.length === 0
 

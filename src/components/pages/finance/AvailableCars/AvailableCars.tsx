@@ -1,32 +1,34 @@
 import { useEffect, useState } from 'react'
-import {
-	createColumnHelper,
-	getCoreRowModel,
-} from '@tanstack/react-table'
+import { createColumnHelper, getCoreRowModel } from '@tanstack/react-table'
 
 import { BookingModal } from '../BookingModal/BookingModal'
 import { DatePaginationFilter, Heading } from 'components/common'
 import { Table } from 'ui'
 import { format } from 'date-fns'
 import { useQuery } from '@tanstack/react-query'
-import FinanceCarsService from '../../../../api/finance/cars'
 
 import * as S from './AvailableCars.styled'
 
 import MoveIcon from 'public/icons/move.svg'
+import carsDashboard from 'api/carsDashboard/carsDashboard'
 
 interface AvailableCar {
-	actual_sum: number
 	brand: string
-	driver_name: string
-	driver_phone: string
 	model: string
-	number: string
 	licensePlate: string
-	status: 'available' | 'booked'
-	status_name: string
-	waited_sum: number
-	warning: boolean
+	number: string
+	status: 'free' | 'booked'
+}
+
+interface ApiData {
+	value: string
+	id: number
+	name?: string
+}
+
+interface PagesData {
+	page: number
+	pages: number
 }
 
 export const AvailableCars = () => {
@@ -37,19 +39,8 @@ export const AvailableCars = () => {
 	const { data, isLoading, isError, error, refetch } = useQuery({
 		queryKey: ['cars'],
 		queryFn: async () =>
-			await FinanceCarsService.getCars({
-				codes,
-				statuses,
-				brands,
-				sort,
-				models,
-				dates: {
-					from: format(startDate as Date, 'dd.MM.yyyy'),
-					to: format(endDate as Date, 'dd.MM.yyyy')
-				}
-			})
+			await carsDashboard.getCarsDashboard({ page: pagesData ? pagesData.page : 1 })
 	})
-	console.log(data?.data.data)
 
 	const [codes, setCodes] = useState<{ [key: string]: string }>({
 		statuses: '',
@@ -66,14 +57,36 @@ export const AvailableCars = () => {
 		new Date(new Date().setDate(new Date().getDate() - 1))
 	)
 	const [endDate, setEndDate] = useState<Date | string>(new Date())
+	const [pagesData, setPagesData] = useState<PagesData>()
 
-	const [availableCars, setAvailableCars] = useState<AvailableCar[]>([])
+	const [availableCars, setAvailableCars] = useState<ApiData[]>([])
 	useEffect(() => {
-		console.log(data)
-		if (data) {
-			setAvailableCars(data!.data.data.cars)
+		let response = []
+		if (data && data.data.list) {
+			console.log(data)
+			response = data?.data.list.map((element: ApiData[]) => {
+				let newobj: any = {}
+				for (let i in element) {
+					if (parseInt(i) === 0) {
+						newobj.brand = element[i].value
+					} else if (parseInt(i) === 1) {
+						newobj.model = element[i].value
+					} else if (parseInt(i) === 2) {
+						newobj.number = element[i].value
+					} else if (parseInt(i) === 3) {
+						newobj.status = element[i].value
+					}
+				}
+				return newobj
+			})
+			setPagesData({ page: data.data.page, pages: data.data.pages })
 		}
+		setAvailableCars(response)
 	}, [data])
+
+	useEffect(() => {
+		refetch()
+	}, [pagesData?.page])
 
 	const columns = [
 		columnHelper.accessor('brand', {
@@ -94,7 +107,7 @@ export const AvailableCars = () => {
 					<S.LicensePlateRow>
 						<span>{getValue()}</span>
 
-						{status === 'available' ? (
+						{status === 'free' ? (
 							<button>
 								<S.Badge
 									color="green"
@@ -129,7 +142,12 @@ export const AvailableCars = () => {
 					Свободные автомобили
 				</Heading>
 
-				<DatePaginationFilter date={date} onDateChange={setDate} />
+				<DatePaginationFilter
+					date={date}
+					onDateChange={setDate}
+					pagesData={pagesData}
+					setPagesData={setPagesData}
+				/>
 
 				<Table
 					noPagination
