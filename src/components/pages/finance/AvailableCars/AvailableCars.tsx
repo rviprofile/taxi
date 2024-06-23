@@ -4,7 +4,6 @@ import { createColumnHelper, getCoreRowModel } from '@tanstack/react-table'
 import { BookingModal } from '../BookingModal/BookingModal'
 import { DatePaginationFilter, Heading } from 'components/common'
 import { Table } from 'ui'
-import { format } from 'date-fns'
 import { useQuery } from '@tanstack/react-query'
 
 import * as S from './AvailableCars.styled'
@@ -12,14 +11,17 @@ import * as S from './AvailableCars.styled'
 import MoveIcon from 'public/icons/move.svg'
 import carsDashboard from 'api/carsDashboard/carsDashboard'
 
+// Тип обьекта, который используется в таблице
 interface AvailableCar {
+	id: number
 	brand: string
 	model: string
 	licensePlate: string
 	number: string
-	status: 'free' | 'booked'
+	status: string
 }
 
+// Из API приходит [[ApiData, ApiData, ApiData], ...]
 interface ApiData {
 	value: string
 	id: number
@@ -57,18 +59,30 @@ export const AvailableCars = () => {
 		new Date(new Date().setDate(new Date().getDate() - 1))
 	)
 	const [endDate, setEndDate] = useState<Date | string>(new Date())
-	const [pagesData, setPagesData] = useState<PagesData>()
 
-	const [availableCars, setAvailableCars] = useState<ApiData[]>([])
+	// В состоянии активная страница и общее количество страниц
+	const [pagesData, setPagesData] = useState<PagesData>()
+	// availableCars идет в таблицу
+	const [availableCars, setAvailableCars] = useState<AvailableCar[]>([])
+	// id автомобиля для брони
+	const [carId, setCarId] = useState<number>()
+
 	useEffect(() => {
 		let response = []
 		if (data && data.data.list) {
-			console.log(data)
 			response = data?.data.list.map((element: ApiData[]) => {
-				let newobj: any = {}
+				let newobj: AvailableCar = {
+					id: 0,
+					brand: '',
+					model: '',
+					licensePlate: '',
+					number: '',
+					status: ''
+				}
 				for (let i in element) {
 					if (parseInt(i) === 0) {
 						newobj.brand = element[i].value
+						newobj.id = element[i].id
 					} else if (parseInt(i) === 1) {
 						newobj.model = element[i].value
 					} else if (parseInt(i) === 2) {
@@ -84,8 +98,10 @@ export const AvailableCars = () => {
 		setAvailableCars(response)
 	}, [data])
 
+	// Изменилась траница? refetch()
 	useEffect(() => {
 		refetch()
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [pagesData?.page])
 
 	const columns = [
@@ -101,7 +117,7 @@ export const AvailableCars = () => {
 		columnHelper.accessor('licensePlate', {
 			header: '',
 			cell: ({ getValue, row }) => {
-				const { status } = row.original
+				const { status, id } = row.original
 
 				return (
 					<S.LicensePlateRow>
@@ -113,6 +129,7 @@ export const AvailableCars = () => {
 									color="green"
 									onClick={() => {
 										setBookingModalOpen(true)
+										setCarId(id)
 									}}
 								>
 									Свободен
@@ -161,6 +178,7 @@ export const AvailableCars = () => {
 
 			<BookingModal
 				open={isBookingModalOpen}
+				carId={carId!}
 				onClose={() => {
 					setBookingModalOpen(false)
 				}}

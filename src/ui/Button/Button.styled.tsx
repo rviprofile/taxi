@@ -5,7 +5,7 @@ import { ButtonProps as MuiButtonProps } from '@mui/material/Button'
 
 import { gradientBlue, gradientGreen } from 'styled/components/ButtonGradient'
 
-type Color = 'green' | 'blue' | 'red'
+type Color = 'green' | 'blue' | 'red' | 'disable'
 
 export interface ButtonProps extends Omit<MuiButtonProps, 'color'> {
 	color?: Color

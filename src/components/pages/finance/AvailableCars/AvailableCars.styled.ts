@@ -15,6 +15,7 @@ export { Badge }
 export const AvailableCars = styled(Box)`
 	width: 500px;
 	padding: 0;
+	overflow: hidden;
 
 	${HeadingContainer} {
 		position: relative;
