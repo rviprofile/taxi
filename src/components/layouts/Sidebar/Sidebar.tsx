@@ -1,13 +1,10 @@
 import { Fragment, useEffect, useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
-
 import * as S from './Sidebar.styled'
-
 import HamburgerIcon from 'public/icons/hamburger.svg'
 import { useQuery } from '@tanstack/react-query'
 import MenuService from '../../../api/menu/menu'
-import Image from 'next/image'
 
 interface SidebarProps {
 	isOpen: boolean
@@ -25,6 +22,7 @@ interface MenuItem {
 }
 
 export const Sidebar = ({ isOpen, onSidebarToggle }: SidebarProps) => {
+	// Запрос к API, получаем все элементы menu
 	const { data } = useQuery({
 		queryKey: ['menu'],
 		queryFn: async () => await MenuService.getMenu()
@@ -33,8 +31,10 @@ export const Sidebar = ({ isOpen, onSidebarToggle }: SidebarProps) => {
 	const messagesNumber = 12
 	const bookmarksNumber = 5
 
+	// Массив с элементами меню
 	const [list, setList] = useState<MenuItem[]>([])
-	const [openGroup, setOpenGroup] = useState<string>()
+	// Какая именно группа элементов открыта
+	const [openGroup, setOpenGroup] = useState<string[]>()
 
 	useEffect(() => {
 		if (data) {
@@ -46,7 +46,7 @@ export const Sidebar = ({ isOpen, onSidebarToggle }: SidebarProps) => {
 		<S.Sidebar open={isOpen}>
 			<S.MenuList>
 				{list
-					? list.map(({ code, icon, url, name, type, submenu, style }, idx) => {
+					? list.map(({ code, url, name, type, submenu, style }, idx) => {
 							const isSelected = router.pathname.startsWith(url)
 
 							return (
@@ -54,7 +54,7 @@ export const Sidebar = ({ isOpen, onSidebarToggle }: SidebarProps) => {
 									{idx === 0 ? (
 										// Шапка меню
 										<S.MenuListItem
-											selected={false}
+											selected={isSelected}
 											onClick={onSidebarToggle}
 											color={style ? style : 'white'}
 										>
@@ -77,9 +77,15 @@ export const Sidebar = ({ isOpen, onSidebarToggle }: SidebarProps) => {
 										<S.MenuListItemsGroup color={style ? style : 'gray'}>
 											{/* Название группы */}
 											<S.MenuListItem
-												selected={false}
+												selected={isSelected}
 												color={style ? style : '#818993'}
-												onClick={() => setOpenGroup(code)}
+												onClick={() =>
+													openGroup?.includes(code)
+														? setOpenGroup((openGroup) =>
+																openGroup!.filter((item) => item !== code)
+														  )
+														: setOpenGroup((prevGroup) => [...(prevGroup || []), code])
+												}
 											>
 												<Link href={url}>
 													<S.MenuItemIcon>
@@ -93,7 +99,7 @@ export const Sidebar = ({ isOpen, onSidebarToggle }: SidebarProps) => {
 												</Link>
 											</S.MenuListItem>
 											{/* Список из submenu */}
-											{openGroup === code
+											{openGroup?.includes(code)
 												? submenu?.map(({ code, icon, url, name, type }) => {
 														return (
 															<S.MenuListItemInGroup
@@ -116,8 +122,14 @@ export const Sidebar = ({ isOpen, onSidebarToggle }: SidebarProps) => {
 												  })
 												: ''}
 											{/* Кнопка закрытия подменю */}
-											{openGroup === code ? (
-												<S.HideButtonBlock onClick={() => setOpenGroup('')}>
+											{openGroup?.includes(code) ? (
+												<S.HideButtonBlock
+													onClick={() =>
+														setOpenGroup((openGroup) =>
+															openGroup!.filter((item) => item !== code)
+														)
+													}
+												>
 													<S.MenuItemImg
 														src={'/icons/sidebar/arrowTop.svg'}
 														color={style ? style : '#818993'}
@@ -132,7 +144,7 @@ export const Sidebar = ({ isOpen, onSidebarToggle }: SidebarProps) => {
 									) : (
 										// Обычный пункт меню
 										<S.MenuListItem
-											selected={false}
+											selected={isSelected}
 											onClick={onSidebarToggle}
 											color={style ? style : 'white'}
 										>

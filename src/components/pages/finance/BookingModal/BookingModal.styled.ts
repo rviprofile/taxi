@@ -72,3 +72,8 @@ export const SumErrorSign = styled.img`
 	position: absolute;
 	transform: translateX(321px) translateY(-20px);
 `
+export const ErrorMessage = styled.span`
+	color: #ff4741;
+	font-weight: 400;
+	font-size: 14px;
+`

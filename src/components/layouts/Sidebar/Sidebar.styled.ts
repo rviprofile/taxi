@@ -54,6 +54,7 @@ export const HideGroupButton = styled(MenuItemLabel)`
 `
 
 export const MenuListItem = styled.li<MenuListItemProps>`
+	color: ${({ selected, color }) => (selected ? color : 'rgba(55, 63, 72, 0.5)')}
 	padding: 2px 10px;
 	transition: 0.3s;
 	&:not(:last-child) {
@@ -84,14 +85,6 @@ export const MenuListItem = styled.li<MenuListItemProps>`
 			background: var(--color-gray-300);
 		}
 	}
-
-	${({ selected }) =>
-		selected &&
-		css`
-			${MenuItemIcon} {
-				background: var(--color-gray-300);
-			}
-		`}
 `
 
 export const MenuListItemInGroup = styled(MenuListItem)``
@@ -102,7 +95,8 @@ export const MenuListItemsGroup = styled.div<MenuListItemGroupProps>`
 	margin-top: 5px;
 	margin-bottom: 5px;
 	border-left: 2px solid ${({ color }) => color};
-	background-color: rgb(255 255 255 / 5%);
+	background-color: #2a2d3033;
+	border-radius: 0 5px 5px 0;
 `
 
 export const MenuLogo = styled.img<MenuLogoProps>`

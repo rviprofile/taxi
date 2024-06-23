@@ -31,11 +31,18 @@ interface Driver {
 	license: string
 }
 
+interface CustomErrorMessage {
+	status: number
+	message: string
+}
+
 export const BookingModal = ({ open, carId, onClose }: BookingModalProps) => {
+	// Запрос для списка всех водителей
 	const { data } = useQuery({
 		queryKey: ['drivers'],
 		queryFn: async () => await allDrivers.getDrivers()
 	})
+	// Запрос с отправкой формы бронирования
 	const booking = useQuery({
 		queryKey: ['booking car'],
 		queryFn: async () =>
@@ -69,14 +76,24 @@ export const BookingModal = ({ open, carId, onClose }: BookingModalProps) => {
 		console.log(booking.status)
 	}
 
+	// Список подсказок по имени водителя
 	const [hints, setHints] = useState<Driver[]>()
+	// Открыты ли подсказки
 	const [isHintsOpen, setIsHintsOpen] = useState<boolean>(false)
+	// Деактивированы ли поля телефон и номер прав
 	const [isDisabled, setIsDisabled] = useState<boolean>(false)
+	// Корректна ли дата. Должна быть больше сегодняшней
 	const [dateCorrect, setDateCorrect] = useState<boolean>(true)
+	// Корректна ли сумма. Должна быть положителной
 	const [sumCorrect, setSumCorrect] = useState<boolean>(true)
+	// Id водителя из выыбранной подсказки
 	const [driverId, setDriverId] = useState<number>()
-	const [errorMessage, setErrorMessage] = useState<AxiosResponse<any, any>>()
+	// Ошибка от API
+	const [errorMessage, setErrorMessage] = useState<
+		AxiosResponse<any, any> | CustomErrorMessage
+	>()
 
+	// Проверяет правильность формы. Номер прав не требуется
 	const validateForm = () => {
 		if (
 			useFormProps.getValues('fullName')?.length > 0 &&
@@ -90,7 +107,9 @@ export const BookingModal = ({ open, carId, onClose }: BookingModalProps) => {
 		}
 	}
 
+	// При изменении данных в форме
 	useEffect(() => {
+		// Фильтруем подсказки по имени
 		setHints(
 			data?.data.drivers.filter((item: Driver) =>
 				item.name
@@ -103,11 +122,13 @@ export const BookingModal = ({ open, carId, onClose }: BookingModalProps) => {
 					)
 			)
 		)
+		// Если значение в инпуте полностью совпадает с подсказкой, значит выбрано из подсказок, значит телефон и номер прав не активны
 		setIsDisabled(
 			data?.data.drivers.filter(
 				(item: Driver) => item.name === useFormProps.getValues('fullName')
 			).length > 0
 		)
+		// Проверяем, что дата в инпуте больше, чем сегодня в UNIX
 		const inputDate = useFormProps.getValues('date')
 		if (inputDate) {
 			const inputUnix = getUnixTime(
@@ -120,6 +141,7 @@ export const BookingModal = ({ open, carId, onClose }: BookingModalProps) => {
 			const todayUnix = Math.floor(new Date().getTime() / 1000)
 			setDateCorrect(inputUnix >= todayUnix)
 		}
+		// Проверяем, что сумма положительна
 		const inputSum = useFormProps.getValues('sum')
 		if (inputSum) {
 			setSumCorrect(Number(inputSum) > 0)
@@ -205,6 +227,17 @@ export const BookingModal = ({ open, carId, onClose }: BookingModalProps) => {
 							disabled={isDisabled}
 						/>
 					</S.FieldsRow>
+					{errorMessage ? (
+						<S.ErrorMessage>
+							{errorMessage && (errorMessage as CustomErrorMessage).message ? (
+								<S.ErrorMessage>
+									{(errorMessage as CustomErrorMessage).message}
+								</S.ErrorMessage>
+							) : null}
+						</S.ErrorMessage>
+					) : (
+						''
+					)}
 					{useFormProps.watch() ? (
 						<Button color={validateForm() ? 'green' : 'disable'} fullWidth type="submit">
 							Забронировать

@@ -99,7 +99,13 @@ export const Table = <TData extends RowData>({
 										>
 											{row.getVisibleCells().map((cell) => (
 												<S.TableCell key={cell.id}>
-													{flexRender(cell.column.columnDef.cell, cell.getContext())}
+													{row.getAllCells()[0].row.original.id ? (
+														<a href={`/${row.getAllCells()[0].row.original.id}`}>
+															{flexRender(cell.column.columnDef.cell, cell.getContext())}
+														</a>
+													) : (
+														flexRender(cell.column.columnDef.cell, cell.getContext())
+													)}
 												</S.TableCell>
 											))}
 										</S.TableRow>

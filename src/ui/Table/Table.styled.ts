@@ -60,6 +60,7 @@ export const Table = styled.table`
 `
 
 export const TableCell = styled.td<TableCellProps>`
+	cursor: pointer;
 	${({ sortable }) =>
 		sortable &&
 		css`

@@ -127,7 +127,8 @@ export const AvailableCars = () => {
 							<button>
 								<S.Badge
 									color="green"
-									onClick={() => {
+									onClick={(event) => {
+										event.preventDefault()
 										setBookingModalOpen(true)
 										setCarId(id)
 									}}
