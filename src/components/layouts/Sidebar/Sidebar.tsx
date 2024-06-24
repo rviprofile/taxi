@@ -50,7 +50,7 @@ export const Sidebar = ({ isOpen, onSidebarToggle }: SidebarProps) => {
 							const isSelected = router.pathname.startsWith(url)
 
 							return (
-								<Fragment key={url}>
+								<Fragment key={url + code + name}>
 									{idx === 0 ? (
 										// Шапка меню
 										<S.MenuListItem
@@ -101,7 +101,7 @@ export const Sidebar = ({ isOpen, onSidebarToggle }: SidebarProps) => {
 												? submenu?.map(({ code, icon, url, name, type }) => {
 														return (
 															<S.MenuListItemInGroup
-																key={url + code}
+																key={url + code + name}
 																selected={false}
 																color={style ? style : '#818993'}
 															>
