@@ -7,7 +7,6 @@ import * as S from './BookingModal.styled'
 import allDrivers from 'api/allDrivers/allDrivers'
 import BookCarService from 'api/bookCar/bookCar'
 import { useEffect, useState } from 'react'
-import { buffer } from 'stream/consumers'
 import { AxiosResponse } from 'axios'
 
 interface BookingModalProps {
@@ -31,10 +30,13 @@ interface Driver {
 	license: string
 }
 
-interface CustomErrorMessage {
-	status: number
-	message: string
-}
+interface ErrorResponse {
+	response: {
+	  data: {
+		message: string;
+	  };
+	};
+  }
 
 export const BookingModal = ({ open, carId, onClose }: BookingModalProps) => {
 	// Запрос для списка всех водителей
@@ -64,16 +66,23 @@ export const BookingModal = ({ open, carId, onClose }: BookingModalProps) => {
 	const { getUnixTime } = require('date-fns')
 
 	const submit: SubmitHandler<FormValues> = () => {
-		validateForm() ? booking.refetch() : console.log(validateForm())
-		if (booking.status === 'success') {
+		validateForm() === true ? booking.refetch() : console.log(validateForm())
+		if (booking.status === 'success' && validateForm() === true) {
+			useFormProps.reset({
+				fullName: '',
+				date: '',
+				sum: '',
+				licenseNumber: '',
+				phone: ''
+			})
 			onClose()
-		} else if (booking.data) {
-			setErrorMessage(booking.data)
-			console.log(errorMessage)
+		} else if (booking.isError === true) {
+			const errorResponse = booking.error as ErrorResponse;
+			setErrorMessage(errorResponse!.response.data.message)
+			console.log(errorResponse!.response.data.message)
 		} else {
 			return
 		}
-		console.log(booking.status)
 	}
 
 	// Список подсказок по имени водителя
@@ -89,9 +98,7 @@ export const BookingModal = ({ open, carId, onClose }: BookingModalProps) => {
 	// Id водителя из выыбранной подсказки
 	const [driverId, setDriverId] = useState<number>()
 	// Ошибка от API
-	const [errorMessage, setErrorMessage] = useState<
-		AxiosResponse<any, any> | CustomErrorMessage
-	>()
+	const [errorMessage, setErrorMessage] = useState<string>()
 
 	// Проверяет правильность формы. Номер прав не требуется
 	const validateForm = () => {
@@ -146,6 +153,15 @@ export const BookingModal = ({ open, carId, onClose }: BookingModalProps) => {
 		if (inputSum) {
 			setSumCorrect(Number(inputSum) > 0)
 		}
+		if (
+			hints?.find((item) => item.name === useFormProps.getValues('fullName')) !==
+			undefined
+		) {
+			setDriverId(
+				hints!.find((item) => item.name === useFormProps.getValues('fullName'))!.id
+			)
+		}
+		setErrorMessage('')
 	}, [
 		useFormProps.getValues('fullName'),
 		useFormProps.getValues('date'),
@@ -229,10 +245,8 @@ export const BookingModal = ({ open, carId, onClose }: BookingModalProps) => {
 					</S.FieldsRow>
 					{errorMessage ? (
 						<S.ErrorMessage>
-							{errorMessage && (errorMessage as CustomErrorMessage).message ? (
-								<S.ErrorMessage>
-									{(errorMessage as CustomErrorMessage).message}
-								</S.ErrorMessage>
+							{errorMessage && (errorMessage as string) ? (
+								<S.ErrorMessage>{errorMessage}</S.ErrorMessage>
 							) : null}
 						</S.ErrorMessage>
 					) : (

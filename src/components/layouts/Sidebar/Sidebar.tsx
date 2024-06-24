@@ -89,11 +89,9 @@ export const Sidebar = ({ isOpen, onSidebarToggle }: SidebarProps) => {
 											>
 												<Link href={url}>
 													<S.MenuItemIcon>
-														<S.MenuItemImg
-															src={`/icons/sidebar/${code}.svg`}
-															color={style ? style : '#818993'}
-															alt="code"
-														/>
+														<S.MenuItemSvg color={style ? style : '#818993'}>
+															<use xlinkHref={'/icons/sidebar/sprite.svg#' + code}></use>
+														</S.MenuItemSvg>
 													</S.MenuItemIcon>
 													<S.MenuItemLabelHeader>{name}</S.MenuItemLabelHeader>
 												</Link>
@@ -109,11 +107,11 @@ export const Sidebar = ({ isOpen, onSidebarToggle }: SidebarProps) => {
 															>
 																<Link href={url}>
 																	<S.MenuItemIcon>
-																		<S.MenuItemImg
-																			src={`/icons/sidebar/${code}.svg`}
-																			color={style ? style : '#818993'}
-																			alt={`icon ${code}`}
-																		/>
+																		<S.MenuItemSvg color={style ? style : '#818993'}>
+																			<use
+																				xlinkHref={'/icons/sidebar/sprite.svg#' + code}
+																			></use>
+																		</S.MenuItemSvg>
 																	</S.MenuItemIcon>
 																	<S.MenuItemLabel>{name}</S.MenuItemLabel>
 																</Link>
@@ -150,11 +148,9 @@ export const Sidebar = ({ isOpen, onSidebarToggle }: SidebarProps) => {
 										>
 											<Link href={url}>
 												<S.MenuItemIcon>
-													<S.MenuItemImg
-														src={`/icons/sidebar/${code}.svg`}
-														color={style ? style : '#818993'}
-														alt={`icon ${code}`}
-													/>
+													<S.MenuItemSvg color={style ? style : '#818993'}>
+														<use xlinkHref={'/icons/sidebar/sprite.svg#' + code}></use>
+													</S.MenuItemSvg>
 												</S.MenuItemIcon>
 												<S.MenuItemLabel>{name}</S.MenuItemLabel>
 											</Link>

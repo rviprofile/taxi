@@ -15,6 +15,10 @@ interface MenuItemImgProps {
 	color?: string
 }
 
+interface MenuItemSvgProps {
+	color?: string
+}
+
 interface MenuLogoProps {
 	isOpen: boolean
 }
@@ -49,8 +53,16 @@ export const MenuItemLabelHeader = styled(MenuItemLabel)``
 
 export const MenuItemImg = styled.img<MenuItemImgProps>``
 
+export const MenuItemSvg = styled.svg<MenuItemSvgProps>`
+	width: 22px;
+	height: 22px;
+	fill: white;
+	color: white;
+	opacity: 0.4;
+`
+
 export const HideGroupButton = styled(MenuItemLabel)`
-	color: #818993;
+	color: transparent;
 `
 
 export const MenuListItem = styled.li<MenuListItemProps>`
@@ -76,8 +88,10 @@ export const MenuListItem = styled.li<MenuListItemProps>`
 			${MenuItemLabel} {
 				color: ${({ color }) => color};
 			}
-			${MenuItemIcon} {
-				fill: green;
+			${MenuItemSvg} {
+				fill: ${({ color }) => (color ? color : 'white')};
+				color: ${({ color }) => (color ? color : 'white')};
+				opacity: 1;
 			}
 		}
 
@@ -134,6 +148,9 @@ const openedSidebarStyles = css`
 	${MenuItemLabelHeader} {
 		color: #fff;
 	}
+	${HideGroupButton} {
+		color: #fff;
+	}
 `
 
 export const HideButtonBlock = styled(MenuItemIconGroup)`
@@ -166,22 +183,19 @@ export const Sidebar = styled.aside<SidebarProps>`
 		width: 229px;
 		background: rgba(31, 34, 37, 0.8);
 		backdrop-filter: blur(10px);
-
 		${MenuItemLabel} {
 			color: #818993;
 		}
 		${MenuItemLabelHeader} {
-		color: #fff;
+			color: #fff;
 		}
-		${HideGroupButton} {
-					color: #fff;
-		}
-
 		${MenuLogo} {
 		display: block;
 		}
+		${HideGroupButton} {
+			color: #fff;
+		}
 	}
-
 	${({ open }) => open && openedSidebarStyles}
 `
 
@@ -218,6 +232,7 @@ export const MessagesNumber = styled.span`
 	color: #000;
 	transform: translateX(-50%);
 `
+
 export const ChatAndBookmarkBlock = styled.div`
 	background: #0f1113;
 	position: sticky;
